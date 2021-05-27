@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class MenuManager : MonoBehaviour
 {
@@ -13,10 +14,11 @@ public class MenuManager : MonoBehaviour
 
     List<GameObject> m_AllPanels;
 
-    // Start is called before the first frame update
-    void Start()
+
+    void Awake()
     {
-        
+        RegisterPanels();
+        OpenPanel(m_PanelMainMenu);
     }
 
     // Update is called once per frame
