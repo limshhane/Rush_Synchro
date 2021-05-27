@@ -45,18 +45,14 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-        if (isTumbling) return;
-
-        doAction();
-
-
-        CheckCollision();
+        if (!isTumbling) doAction();
+        //CheckCollision();
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!isTumbling) doAction();
+        
         //CheckCollision();
         Debug.DrawRay(transform.position, cubeDirection * raycastDistance, Color.black);
         Debug.DrawRay(transform.position, Vector3.down * raycastDistance, Color.yellow);
@@ -130,25 +126,34 @@ public class Cube : MonoBehaviour
         
         initMove();
     }
+    public void SetDirection(Vector3 d)
+    {
+        cubeDirection = d;
+        if (d.Equals(Vector3.forward))
+        {
+            cubeDirectionX = 0;
+            cubeDirectionZ = 1;
+        }
+        else if (d.Equals(Vector3.right))
+        {
+            cubeDirectionX = -1;
+            cubeDirectionZ = 0;
+        }
+        else if (d.Equals(Vector3.back))
+        {
+            cubeDirectionX = 1;
+            cubeDirectionZ = 0;
+        }
+        else
+        {
+            cubeDirectionX = 0;
+            cubeDirectionZ = -1;
+        }
+    }
 
     public void SetDirection()
     {
-        //if (cubeDirection.Equals(Vector3.forward))
-        //{
-        //    cubeDirection = Vector3.right;
-        //}
-        //else if (cubeDirection.Equals(Vector3.right))
-        //{
-        //    cubeDirection = Vector3.back;
-        //}
-        //else if (cubeDirection.Equals(Vector3.back))
-        //{
-        //    cubeDirection = Vector3.left;
-        //}
-        //else
-        //{
-        //    cubeDirection = Vector3.forward;
-        //}
+
         if (cubeDirectionX ==0 && cubeDirectionZ == 1)
         {
             cubeDirectionX = -1;
