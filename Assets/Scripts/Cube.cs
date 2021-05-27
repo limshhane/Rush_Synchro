@@ -6,6 +6,8 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
 
+    GameManager GM;
+
     static public List<Cube> list { get; private set; } = new List<Cube>(); 
 
     [SerializeField]public float tumblingDuration = 0.3f;
@@ -30,6 +32,25 @@ public class Cube : MonoBehaviour
 
     private Action doAction;
 
+    void Awake()
+    {
+        GM = GameManager.Instance;
+        GM.OnStateChange += HandleOnStateChange;
+    }
+
+    public void HandleOnStateChange()
+    {
+        // TODO
+        if(!GM.IsGameOn && !GM.IsGamePaused)
+        {
+            foreach(Cube c in list)
+            {
+                Destroy(c);
+            }
+            Destroy(this);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +66,7 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
+        if (GM.IsGameStopped) return;
         if (!isTumbling) doAction();
         //CheckCollision();
     }
@@ -52,7 +74,7 @@ public class Cube : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        
+        if (GM.IsGameStopped) return;
         //CheckCollision();
         Debug.DrawRay(transform.position, cubeDirection * raycastDistance, Color.black);
         Debug.DrawRay(transform.position, Vector3.down * raycastDistance, Color.yellow);
