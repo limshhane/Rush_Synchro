@@ -2,69 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerFollow : MonoBehaviour {
+public class PlayerFollow : MonoBehaviour
+{
+    [SerializeField] private Camera cam;
+    [SerializeField] private Transform target;
+    [SerializeField] private float distanceToTarget = 10;
+    [SerializeField] [Range(0, 360)] private int maxRotationInOneSwipe = 180;
+    [SerializeField] private float ScrollSensitvity = 2f;
 
-    protected Transform _XForm_Camera;
-    protected Transform _XForm_Parent;
+    private Vector3 previousPosition;
 
-    protected Vector3 _LocalRotation;
-    [SerializeField] float _CameraDistance = 10f;
-
-    public float MouseSensitivity = 4f;
-    public float ScrollSensitvity = 2f;
-    public float OrbitDampening = 10f;
-    public float ScrollDampening = 6f;
-
-    public bool CameraDisabled = false;
-
-
-    // Use this for initialization
-    void Start()
+    void Update()
     {
-        this._XForm_Camera = this.transform;
-        this._XForm_Parent = this.transform.parent;
-    }
-
-
-    void LateUpdate()
-    {
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-            CameraDisabled = !CameraDisabled;
-
-        if (!CameraDisabled && Input.GetMouseButton(1))
+        if (Input.GetMouseButtonDown(1))
         {
-            //Rotation of the Camera based on Mouse Coordinates
-            if (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
-            {
-                _LocalRotation.x += Input.GetAxis("Mouse X") * MouseSensitivity;
-                _LocalRotation.y -= Input.GetAxis("Mouse Y") * MouseSensitivity;
-
-                //Clamp the y Rotation to horizon and not flipping over at the top
-                if (_LocalRotation.y < 0f)
-                    _LocalRotation.y = 0f;
-                else if (_LocalRotation.y > 90f)
-                    _LocalRotation.y = 90f;
-            }
-            //Zooming Input from our Mouse Scroll Wheel
-            if (Input.GetAxis("Mouse ScrollWheel") != 0f)
-            {
-                float ScrollAmount = Input.GetAxis("Mouse ScrollWheel") * ScrollSensitvity;
-
-                ScrollAmount *= (this._CameraDistance * 0.3f);
-
-                this._CameraDistance += ScrollAmount * -1f;
-
-                this._CameraDistance = Mathf.Clamp(this._CameraDistance, 1.5f, 100f);
-            }
+            previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);
         }
-
-        //Actual Camera Rig Transformations
-        Quaternion QT = Quaternion.Euler(_LocalRotation.y, _LocalRotation.x, 0);
-        this._XForm_Parent.rotation = Quaternion.Lerp(this._XForm_Parent.rotation, QT, Time.deltaTime * OrbitDampening);
-
-        if (this._XForm_Camera.localPosition.z != this._CameraDistance * -1f)
+        else if (Input.GetMouseButton(1))
         {
-            this._XForm_Camera.localPosition = new Vector3(0f, 0f, Mathf.Lerp(this._XForm_Camera.localPosition.z, this._CameraDistance * -1f, Time.deltaTime * ScrollDampening));
+            Vector3 newPosition = cam.ScreenToViewportPoint(Input.mousePosition);
+            Vector3 direction = previousPosition - newPosition;
+
+            float rotationAroundYAxis = -direction.x * maxRotationInOneSwipe; // camera moves horizontally
+            float rotationAroundXAxis = direction.y * maxRotationInOneSwipe; // camera moves vertically
+
+            cam.transform.position = target.position;
+
+            cam.transform.Rotate(new Vector3(1, 0, 0), rotationAroundXAxis);
+            cam.transform.Rotate(new Vector3(0, 1, 0), rotationAroundYAxis, Space.World); // <— This is what makes it work!
+
+            cam.transform.Translate(new Vector3(0, 0, -distanceToTarget));
+
+            previousPosition = newPosition;
+        }
+        if (Input.GetAxis("Mouse ScrollWheel")!=0f){
+            float ScrollAmount = Input.GetAxis("Mouse ScrollWheel") * ScrollSensitvity;
+            ScrollAmount *= (distanceToTarget * 0.3f);
+            distanceToTarget += ScrollAmount * -1f;
+            distanceToTarget = Mathf.Clamp(distanceToTarget, 1.5f, 100f);
         }
     }
 }

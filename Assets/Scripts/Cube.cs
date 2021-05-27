@@ -95,6 +95,10 @@ public class Cube : MonoBehaviour
         Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
         if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance)){
             initFall();
+            if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance*100f))
+            {
+                Debug.Log("lose");
+            }
             return;
         }
         
