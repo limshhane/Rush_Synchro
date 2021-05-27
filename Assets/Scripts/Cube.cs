@@ -5,23 +5,33 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
 
-    static public List<Cube> list { get; private set; } = new List<Cube>();
+    static public List<Cube> list { get; private set; } = new List<Cube>(); 
 
     [SerializeField]public float tumblingDuration = 0.2f;
     bool isTumbling = false;
+
+    Vector3 cubeDirection;
+    Quaternion cubeRotation;
+
+    private RaycastHit hit;
+    private float raycastDistance = 0.8f;
     // Start is called before the first frame update
     void Start()
     {
         list.Add(this);
+        cubeDirection = Vector3.forward;
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        Debug.DrawRay(transform.position, cubeDirection * raycastDistance, Color.black);
+        CheckCollision();
         if (!isTumbling)
         {
-            StartCoroutine(Tumble(Vector3.right));
+            
+            StartCoroutine(Tumble(cubeDirection));
         }
     }
 
@@ -58,6 +68,55 @@ public class Cube : MonoBehaviour
 
         isTumbling = false;
     }
+
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Wall"))
+    //    {
+    //        //transform.RotateAround()
+    //    }
+    //}
+
+    private void CheckCollision()
+    {
+        
+        //check for wall forward
+        if (Physics.Raycast(transform.position, cubeDirection, out hit, raycastDistance))
+        {
+            GameObject hitObjectInFront = hit.collider.gameObject;
+
+            if (hitObjectInFront.CompareTag("Wall"))
+            {
+                SetDirection();
+                return;
+
+            }
+        }
+    }
+
+    public void SetDirection()
+    {
+        if (cubeDirection.Equals(Vector3.forward))
+        {
+            cubeDirection = Vector3.right;
+        }
+        else if (cubeDirection.Equals(Vector3.right))
+        {
+            cubeDirection = Vector3.back;
+        }
+        else if (cubeDirection.Equals(Vector3.back))
+        {
+            cubeDirection = Vector3.left;
+        }
+        else
+        {
+            cubeDirection = Vector3.forward;
+        }
+        //cubeRotation = Quaternion.AngleAxis(90f, Vector3.Cross(Vector3.up, cubeDirection));
+    }
+
+
+
 
 
 }
