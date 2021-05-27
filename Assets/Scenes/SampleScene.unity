@@ -875,7 +875,12 @@ PrefabInstance:
     - target: {fileID: 7662858954850028529, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
         type: 3}
       propertyPath: tumblingDuration
-      value: 1
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7662858954850028529, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
+        type: 3}
+      propertyPath: fallSpeed
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1213640374989558991, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
         type: 3}
@@ -885,12 +890,12 @@ PrefabInstance:
     - target: {fileID: 1213640374989558991, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 7.6
       objectReference: {fileID: 0}
     - target: {fileID: 1213640374989558991, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.5
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1213640374989558991, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
         type: 3}

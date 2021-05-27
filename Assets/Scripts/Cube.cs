@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Cube : MonoBehaviour
@@ -8,31 +9,41 @@ public class Cube : MonoBehaviour
     static public List<Cube> list { get; private set; } = new List<Cube>(); 
 
     [SerializeField]public float tumblingDuration = 0.2f;
+    [SerializeField] public float fallSpeed = 3f;
     bool isTumbling = false;
+    bool isFalling = false;
 
+    //Position variables
     Vector3 cubeDirection;
     Quaternion cubeRotation;
+    private Vector3 fromPosition;
+    private Vector3 toPosition;
+
 
     private RaycastHit hit;
-    private float raycastDistance = 0.8f;
+    private float raycastDistance;
+
+    private Action doAction;
+
     // Start is called before the first frame update
     void Start()
     {
+        raycastDistance =(GetComponent<Renderer>().bounds.size.x / 2)+0.1f;
+
         list.Add(this);
+        initWait();
         cubeDirection = Vector3.forward;
+        toPosition = transform.position;
 
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!isTumbling) doAction();
+        //CheckCollision();
         Debug.DrawRay(transform.position, cubeDirection * raycastDistance, Color.black);
-        CheckCollision();
-        if (!isTumbling)
-        {
-            
-            StartCoroutine(Tumble(cubeDirection));
-        }
+        Debug.DrawRay(transform.position, Vector3.down * raycastDistance, Color.yellow);
     }
 
     IEnumerator Tumble(Vector3 direction)
@@ -69,22 +80,30 @@ public class Cube : MonoBehaviour
         isTumbling = false;
     }
 
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Wall"))
-    //    {
-    //        //transform.RotateAround()
-    //    }
-    //}
+    IEnumerator Fall()
+    {
+        isFalling = true;
+        transform.Translate(Vector3.down * fallSpeed * Time.deltaTime, Space.World);
+        yield return null;
+        isFalling = false;
+    }
 
     private void CheckCollision()
     {
+        Debug.Log("Check Collision");
+        //check ground
+        Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
+        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance)){
+            initFall();
+            return;
+        }
         
-        //check for wall forward
+
+        //check for wall
+        Debug.Log("Collision test " + Physics.Raycast(transform.position, cubeDirection, out hit, raycastDistance));
         if (Physics.Raycast(transform.position, cubeDirection, out hit, raycastDistance))
         {
             GameObject hitObjectInFront = hit.collider.gameObject;
-
             if (hitObjectInFront.CompareTag("Wall"))
             {
                 SetDirection();
@@ -92,6 +111,8 @@ public class Cube : MonoBehaviour
 
             }
         }
+        
+        initMove();
     }
 
     public void SetDirection()
@@ -115,6 +136,39 @@ public class Cube : MonoBehaviour
         //cubeRotation = Quaternion.AngleAxis(90f, Vector3.Cross(Vector3.up, cubeDirection));
     }
 
+    public void initFall()
+    {
+        doAction = doActionFall;
+    }
+    private void doActionFall()
+    {
+        StartCoroutine(Fall());
+
+        initWait();
+    }
+
+    private void initWait()
+    {
+        doAction = doActionWait;
+    }
+
+    private void doActionWait()
+    {
+        Debug.Log("Do Action Wait");
+        CheckCollision();
+    }
+
+    private void initMove()
+    {
+        doAction = doActionMove;
+    }
+
+    private void doActionMove()
+    {
+        StartCoroutine(Tumble(cubeDirection));
+        
+        initWait();
+    }
 
 
 
