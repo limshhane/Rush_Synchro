@@ -15,9 +15,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] GameObject m_PanelGameOver;
     [SerializeField] GameObject m_PanelGamePaused;
 
+
     List<GameObject> m_AllPanels;
 
-    private bool inPreGame=false;
+    
 
 
     void Awake()
@@ -32,12 +33,7 @@ public class MenuManager : MonoBehaviour
     {
         Debug.Log("OK");
         if(GM.IsGamePaused) OpenPanel(m_PanelGamePaused);
-        if (GM.IsGameOn)
-        {
-            // C BIZARRE ICI
-            OpenPanel(m_PanelInGameMenu);
-            OpenPanelOnly(m_PreInGameMenu);
-        }
+        if (GM.IsGameOn) OpenPanel(m_PanelInGameMenu);
     }
 
     // Update is called once per frame
@@ -52,7 +48,6 @@ public class MenuManager : MonoBehaviour
         m_AllPanels = new List<GameObject>();
         m_AllPanels.Add(m_PanelMainMenu);
         m_AllPanels.Add(m_PanelInGameMenu);
-        m_AllPanels.Add(m_PreInGameMenu);
         m_AllPanels.Add(m_PanelGamePaused);
         //m_AllPanels.Add(m_PanelGameOver);
         //m_AllPanels.Add(m_PanelVictory);
@@ -79,23 +74,8 @@ public class MenuManager : MonoBehaviour
     {
         
         OpenPanel(m_PanelInGameMenu);
-        OpenPanelOnly(m_PreInGameMenu);
         GM.SetGameState(GameState.Game);
-    }
-
-    public void PreGameButtonHasBeenClick()
-    {
-        if (!inPreGame)
-        {
-            closePanel(m_PanelInGameMenu);
-            inPreGame = true;
-        }
-        else
-        {
-            OpenPanelOnly(m_PanelInGameMenu);
-            inPreGame = false;
-        }
-
+ 
     }
 
     public void ResumeButtonHasBeenClicked()
