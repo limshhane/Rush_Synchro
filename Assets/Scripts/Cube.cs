@@ -12,8 +12,14 @@ public class Cube : MonoBehaviour
 
     [SerializeField]public float tumblingDuration = 0.3f;
     [SerializeField] public float fallSpeed = 3f;
-    bool isTumbling = false;
+    [SerializeField] public float waitingDuration = 3f;
+    [SerializeField] public float rotateDuration = 1f;
+
+    //Variable Animation
+    bool isWaiting = false;
+    public bool isTumbling = false;
     bool isFalling = false;
+    bool isRotating = false;
 
     //Position variables
     Vector3 cubeDirection;
@@ -67,7 +73,7 @@ public class Cube : MonoBehaviour
     private void Update()
     {
         if (GM.IsGameStopped) return;
-        if (!isTumbling) doAction();
+        if (!isTumbling && !isRotating && !isFalling && !isWaiting) doAction();
         //CheckCollision();
     }
 
@@ -116,6 +122,28 @@ public class Cube : MonoBehaviour
         isFalling = false;
     }
 
+    IEnumerator Rotate(Vector3 angles, float duration)
+    {
+        Debug.Log("ROTATATATATA3");
+        isRotating = true;
+        Quaternion startRotation = transform.rotation;
+        Quaternion endRotation = Quaternion.Euler(angles) * startRotation;
+        for (float t = 0; t < duration; t += Time.deltaTime)
+        {
+            transform.rotation = Quaternion.Lerp(startRotation, endRotation, t / duration);
+            yield return null;
+        }
+        transform.rotation = endRotation;
+        isRotating = false;
+    }
+
+    IEnumerator Wait()
+    {
+        isWaiting = true;
+        yield return new WaitForSeconds(waitingDuration);
+        isWaiting = false;
+    }
+
     private void CheckCollision()
     {
         Debug.Log("Check Collision");
@@ -130,12 +158,21 @@ public class Cube : MonoBehaviour
             }
             return;
         }
+        else
+        {
+            GameObject hitObjectInFront = hit.collider.gameObject;
+            if (hitObjectInFront.CompareTag("ArrowTile"))
+            {
+                ArrowTile arrTile = hitObjectInFront.GetComponent<ArrowTile>();
+                SetDirection(arrTile.ArrowDirection);
+                return;
+            }
+        }
 
         //check for wall
         //Debug.Log("Collision test " + Physics.Raycast(transform.position, cubeDirection, out hit, raycastDistance));
         if (Physics.Raycast(transform.position, cubeDirection, out hit, raycastDistance))
         {
-            Debug.Log("ICICICICICI");
             GameObject hitObjectInFront = hit.collider.gameObject;
             if (hitObjectInFront.CompareTag("Wall"))
             {
@@ -145,12 +182,32 @@ public class Cube : MonoBehaviour
 
             }
         }
-        
+
         initMove();
     }
+
+    //private void OnTriggerStay(Collider other)
+    //{
+    //    Debug.Log("onTrigger");
+    //    if (other.gameObject.CompareTag("ArrowTile"))
+    //    {
+    //        ArrowTile arrTile = other.gameObject.GetComponent<ArrowTile>();
+    //        if (!isTumbling && isWaiting)
+    //        {
+    //            Debug.Log("COLLISION TILE");
+    //            SetDirection(Vector3.right);
+    //            arrTile.GetComponent<Collider>().isTrigger = false;
+    //            //arrTile.StartCooldown();
+    //        }
+    //    }
+    //}
+
+
     public void SetDirection(Vector3 d)
     {
+        initRotate();
         cubeDirection = d;
+        Debug.Log(d.x +d.y + d.z);
         if (d.Equals(Vector3.forward))
         {
             cubeDirectionX = 0;
@@ -163,19 +220,20 @@ public class Cube : MonoBehaviour
         }
         else if (d.Equals(Vector3.back))
         {
-            cubeDirectionX = 1;
-            cubeDirectionZ = 0;
-        }
-        else
-        {
             cubeDirectionX = 0;
             cubeDirectionZ = -1;
         }
+        else
+        {
+            cubeDirectionX = 1;
+            cubeDirectionZ = 0;
+        }
+        
     }
 
     public void SetDirection()
     {
-
+        initRotate();
         if (cubeDirectionX ==0 && cubeDirectionZ == 1)
         {
             cubeDirectionX = -1;
@@ -200,12 +258,15 @@ public class Cube : MonoBehaviour
             cubeDirectionZ = 1;
             cubeDirection = Vector3.forward;
         }
+
+        
     }
 
     public void initFall()
     {
         doAction = doActionFall;
     }
+
     private void doActionFall()
     {
         StartCoroutine(Fall());
@@ -223,6 +284,7 @@ public class Cube : MonoBehaviour
         Debug.Log("Do Action Wait");
         //cubeDirectionX = 0;
         //cubeDirectionZ = 0;
+        StartCoroutine(Wait());
         CheckCollision();
     }
 
@@ -246,5 +308,18 @@ public class Cube : MonoBehaviour
 
 
 
+    private void initRotate()
+    {
+        doAction = doActionRotate;
+    }
+
+    private void doActionRotate()
+    {
+        if (isTumbling) return;
+        Debug.Log("oui");
+        initMove();
+        StartCoroutine(Rotate( (Vector3.up * 90), rotateDuration));
+        
+    }
 
 }
