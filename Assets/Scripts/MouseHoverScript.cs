@@ -4,13 +4,25 @@ using UnityEngine;
 
 public class MouseHoverScript : MonoBehaviour
 {
+    GameManager GM;
 
     private Color startcolor;
-    bool mouseOver = false;
+
+    void Awake()
+    {
+        GM = GameManager.Instance;
+        GM.OnStateChange += HandleOnStateChange;
+    }
+
+    public void HandleOnStateChange()
+    {
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -21,13 +33,13 @@ public class MouseHoverScript : MonoBehaviour
 
     void OnMouseEnter()
     {
-        mouseOver = true;
+        if (!GM.IsPreGame) return;
         startcolor = GetComponent<Renderer>().material.color;
         GetComponent<Renderer>().material.color = new Color(1f,0.5f,0.5f);
     }
     void OnMouseExit()
     {
-        mouseOver = false;
+        if (!GM.IsPreGame || startcolor.Equals(new Color(0, 0, 0, 0))) return;
         GetComponent<Renderer>().material.color = startcolor;
     }
 }

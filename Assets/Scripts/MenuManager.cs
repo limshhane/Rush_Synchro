@@ -26,7 +26,7 @@ public class MenuManager : MonoBehaviour
 
     public void HandleOnStateChange()
     {
-        Debug.Log("OK");
+        // Debug.Log("OK");
         if(GM.IsGamePaused) OpenPanel(m_PanelGamePaused);
         if (GM.IsGameOn) OpenPanel(m_PanelInGameMenu);
         if (GM.IsGameWon) OpenPanel(m_PanelVictory);
@@ -81,11 +81,16 @@ public class MenuManager : MonoBehaviour
         GM.SetGameState(GameState.Game);
     }
 
-    public void ResetButtonHasBeenClicked()
+    public void MainMenuButtonHasBeenClicked()
     {
-        // Mettre pregame plutot mais bref
-        OpenPanel(m_PanelMainMenu);
-        GM.SetGameState(GameState.Menu);
+        OpenPanel(m_PanelInGameMenu);
+        GM.SetGameState(GameState.PreGame);
+    }
+
+    public void RestartButtonHasBeenClicked()
+    {
+        OpenPanel(m_PanelInGameMenu);
+        GM.SetGameState(GameState.PreGame);
     }
     #endregion
 }

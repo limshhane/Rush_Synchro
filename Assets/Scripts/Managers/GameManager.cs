@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     public bool IsPreGame {  get { return m_GameState == GameState.PreGame;  } }
 
     private int numberOfCubesPutIn = 0;
-    private int numberOfCubesToPutIn = 5;
+    private int numberOfCubesToPutIn = 12;
 
     private void Awake()
     {

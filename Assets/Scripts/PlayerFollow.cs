@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerFollow : MonoBehaviour
 {
+    GameManager GM;
+
     [SerializeField] private Camera cam;
     [SerializeField] private Transform target;
     [SerializeField] private float distanceToTarget = 10;
@@ -11,6 +13,17 @@ public class PlayerFollow : MonoBehaviour
     [SerializeField] private float ScrollSensitvity = 2f;
 
     private Vector3 previousPosition;
+
+    void Awake()
+    {
+        GM = GameManager.Instance;
+        GM.OnStateChange += HandleOnStateChange;
+    }
+
+    public void HandleOnStateChange()
+    {
+
+    }
 
     private void Start()
     {
@@ -20,6 +33,7 @@ public class PlayerFollow : MonoBehaviour
 
     void Update()
     {
+        if (!GM.IsGameOn && !GM.IsPreGame && !GM.IsGameOver) return;
         if (Input.GetMouseButtonDown(1))
         {
             previousPosition = cam.ScreenToViewportPoint(Input.mousePosition);

@@ -6,13 +6,26 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    
+    GameManager GM;
+
     [SerializeField] public List<ArrowTile> inventory;
 
     [SerializeField] public List<int> inventoryQuantity;
 
     private ArrowTile ArrowInHand=null;
     private int selectArrowIndex;
+
+    void Awake()
+    {
+        GM = GameManager.Instance;
+        GM.OnStateChange += HandleOnStateChange;
+    }
+
+    public void HandleOnStateChange()
+    {
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +39,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-
+        if (!GM.IsGameOn && !GM.IsPreGame) return;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit))
         {

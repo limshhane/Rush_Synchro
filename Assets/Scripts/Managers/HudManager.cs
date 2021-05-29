@@ -29,7 +29,12 @@ public class HudManager : MonoBehaviour
 
     public void HandleOnStateChange()
     {
-        
+        if(GM.IsPreGame)
+        {
+            resetButton.SetActive(false);
+            startButton.SetActive(true);
+            itemContainers.SetActive(true);
+        }
     }
 
     // Update is called once per frame
@@ -60,7 +65,7 @@ public class HudManager : MonoBehaviour
 
     public void UpdateHUD()
     {
-    int childNumber = itemContainers.transform.childCount;
+        int childNumber = itemContainers.transform.childCount;
         for (int i = 0; i < childNumber; i++)
         {
             Text childName = itemContainers.transform.GetChild(i).GetChild(0).GetComponent<Text>();

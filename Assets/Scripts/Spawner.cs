@@ -21,7 +21,7 @@ public class Spawner : MonoBehaviour
     }
 
     [SerializeField] private spawnDirectionEnum spawnDirection = spawnDirectionEnum.Forward;
-    private Vector3 direction = Vector3.forward;
+    private Quaternion direction = Quaternion.identity;
 
     void Awake()
     {
@@ -60,8 +60,7 @@ public class Spawner : MonoBehaviour
         if (!GM.IsGameStopped && isOn && counter < numberOfCubesToSpawn)
         {
             // Debug.Log("Spawning cube");
-            Cube c = Instantiate(cubePrefab, new Vector3(transform.position.x, transform.position.y + cubePrefab.transform.localScale.x, transform.position.z), Quaternion.identity).GetComponent<Cube>();
-            c.SetDirection(direction);
+            Cube c = Instantiate(cubePrefab, new Vector3(transform.position.x, transform.position.y + cubePrefab.transform.localScale.x, transform.position.z), direction).GetComponent<Cube>();
             counter++;
         } else if(counter >= numberOfCubesToSpawn)
         {
@@ -74,16 +73,16 @@ public class Spawner : MonoBehaviour
         switch(spawnDirection)
         {
             case spawnDirectionEnum.Backward:
-                direction = new Vector3(0, 0, -1);
+                direction = Quaternion.Euler(0, 180, 0);
                 break;
             case spawnDirectionEnum.Forward:
-                direction = new Vector3(0, 0, 1);
+                direction = Quaternion.identity;
                 break;
             case spawnDirectionEnum.Right:
-                direction = new Vector3(-1, 0, 0);
+                direction = Quaternion.Euler(0, 90, 0);
                 break;
             case spawnDirectionEnum.Left:
-                direction = new Vector3(1, 0, 0);
+                direction = Quaternion.Euler(0, 270, 0);
                 break;
             default:
                 break;

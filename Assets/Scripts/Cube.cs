@@ -53,7 +53,7 @@ public class Cube : MonoBehaviour
             {
                 Destroy(c.gameObject);
             }
-            Destroy(this.gameObject);
+            // Destroy(this.gameObject);
             list.Clear();
             return;
         }
@@ -76,6 +76,7 @@ public class Cube : MonoBehaviour
         float rotationY = transform.localRotation.eulerAngles.y;
         cubeDirectionX = (rotationY == 90f) ? -1 : (rotationY == 270f) ? 1 : 0;
         cubeDirectionZ = (rotationY == 0f) ? 1 : (rotationY == 180f) ? -1 : 0;
+        cubeDirection = (rotationY == 0f) ? Vector3.forward : (rotationY == 180f) ? Vector3.down : (rotationY == 90f) ? Vector3.right : (rotationY == 270f) ? Vector3.left : Vector3.forward;
     }
 
     private void Update()
@@ -129,15 +130,7 @@ public class Cube : MonoBehaviour
         
     }
 
-    IEnumerator Fall()
-    {
-        isFalling = true;
-        transform.Translate(Vector3.down * fallSpeed*3 * Time.deltaTime, Space.World);
-        yield return null;
-        isFalling = false;
-    }
-
-    IEnumerator Rotate(Vector3 angles, float duration)
+    /* IEnumerator Rotate(Vector3 angles, float duration)
     {
         //Debug.Log("ROTATATATATA3");
         isRotating = true;
@@ -150,7 +143,7 @@ public class Cube : MonoBehaviour
         }
         transform.rotation = endRotation;
         isRotating = false;
-    }
+    } */
 
     IEnumerator Wait()
     {
@@ -159,13 +152,22 @@ public class Cube : MonoBehaviour
         isWaiting = false;
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Collision");
+        if (other.gameObject.CompareTag("Cube"))
+        {
+            GM.SetGameState(GameState.Lost);
+        }
+    }
+
     private void CheckCollision()
     {
         //Debug.Log("Check Collision");
         //check ground
         //Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
         raycastDistance = GetComponent<Renderer>().bounds.size.x / 2 + 0.1f;
-        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance/4 +0.1f)){
+        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance +0.1f)){
             initFall();
             if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance*100f))
             {
@@ -250,7 +252,6 @@ public class Cube : MonoBehaviour
         {
             cubeDirectionX = 1;
             cubeDirectionZ = 0;
-            Debug.Log("OKDEAE");
         }
         
     }
@@ -293,8 +294,8 @@ public class Cube : MonoBehaviour
 
     private void doActionFall()
     {
-        StartCoroutine(Fall());
-
+        // StartCoroutine(Fall());
+        transform.Translate(Vector3.down * transform.GetComponent<Renderer>().bounds.size.y, Space.World);
         initWait();
     }
 
@@ -342,7 +343,7 @@ public class Cube : MonoBehaviour
         if (isTumbling) return;
         //Debug.Log("oui");
         initMove();
-        StartCoroutine(Rotate( (Vector3.up * 90), rotateDuration));
+        // StartCoroutine(Rotate( (Vector3.up * 90), rotateDuration));
         
     }
 
