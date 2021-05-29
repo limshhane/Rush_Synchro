@@ -47,7 +47,7 @@ public class Cube : MonoBehaviour
     public void HandleOnStateChange()
     {
         // TODO
-        if(!GM.IsGameOn && !GM.IsGamePaused)
+        if(!GM.IsGameOn && !GM.IsGamePaused && !GM.IsGameOver)
         {
             foreach(Cube c in list)
             {
@@ -111,7 +111,7 @@ public class Cube : MonoBehaviour
         while (ratio != 1)
         {
 
-            rotationTime += Time.fixedDeltaTime;
+            rotationTime += Time.deltaTime;
             ratio = Mathf.Lerp(0, 1, rotationTime / tumblingDuration);
 
 
@@ -154,9 +154,9 @@ public class Cube : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Collision");
         if (other.gameObject.CompareTag("Cube"))
         {
+            CheckLose(other);
             GM.SetGameState(GameState.Lost);
         }
     }
@@ -171,7 +171,7 @@ public class Cube : MonoBehaviour
             initFall();
             if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance*100f))
             {
-                Debug.Log("Fall");
+                CheckLose();
                 GM.SetGameState(GameState.Lost);
             }
             return;
@@ -200,7 +200,7 @@ public class Cube : MonoBehaviour
             GameObject hitObjectInFront = hit.collider.gameObject;
             if (hitObjectInFront.CompareTag("Wall"))
             {
-                Debug.Log("Collision wall");
+                //Debug.Log("Collision wall");
                 // GM.SetGameState(GameState.Lost);
                 SetDirection();
                 return;
@@ -345,6 +345,18 @@ public class Cube : MonoBehaviour
         initMove();
         // StartCoroutine(Rotate( (Vector3.up * 90), rotateDuration));
         
+    }
+
+    private void CheckLose()
+    {
+        GetComponent<Renderer>().material.color = Color.black;
+        
+    }
+
+    private void CheckLose(Collider other)
+    {
+        GetComponent<Renderer>().material.color = Color.black;
+        other.GetComponent<Renderer>().material.color = Color.black;
     }
 
 }

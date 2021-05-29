@@ -55,11 +55,14 @@ public class PlayerFollow : MonoBehaviour
 
             previousPosition = newPosition;
         }
-        if (Input.GetAxis("Mouse ScrollWheel")!=0f){
+        if (Input.GetAxis("Mouse ScrollWheel")!=0f && Input.GetMouseButton(1))
+        {
             float ScrollAmount = Input.GetAxis("Mouse ScrollWheel") * ScrollSensitvity;
             ScrollAmount *= (distanceToTarget * 0.3f);
             distanceToTarget += ScrollAmount * -1f;
             distanceToTarget = Mathf.Clamp(distanceToTarget, 1.5f, 100f);
         }
     }
+
+
 }

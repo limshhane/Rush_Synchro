@@ -16,6 +16,8 @@ public delegate void OnStateChangeHandler();
 
 public class GameManager : MonoBehaviour
 {
+    
+
     private static GameManager instance;
     public event OnStateChangeHandler OnStateChange;
     private GameState m_GameState;
@@ -23,7 +25,7 @@ public class GameManager : MonoBehaviour
     public bool IsGameOver { get { return m_GameState == GameState.Lost; } }
     public bool IsGameWon { get { return m_GameState == GameState.Won; } }
 
-
+    
     public bool IsGameStopped {  get { return m_GameState != GameState.Game;  } }
 
     public bool IsGamePaused { get { return m_GameState == GameState.Paused; } }
@@ -69,6 +71,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Debug.Log(m_GameState);
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (m_GameState == GameState.Game)
@@ -84,6 +87,7 @@ public class GameManager : MonoBehaviour
 
         }
     }
+
 
     public void SetGameState(GameState state)
     {
