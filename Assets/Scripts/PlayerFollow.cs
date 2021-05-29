@@ -12,6 +12,12 @@ public class PlayerFollow : MonoBehaviour
 
     private Vector3 previousPosition;
 
+    private void Start()
+    {
+        cam.transform.position = target.position;
+        cam.transform.Translate(new Vector3(0, 0, -distanceToTarget));
+    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(1))
