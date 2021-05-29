@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     public bool IsPlaying { get { return m_GameState == GameState.Game; } }
     public bool IsGameOver { get { return m_GameState == GameState.Lost; } }
 
-    public bool IsGameStopped {  get { return m_GameState == GameState.Paused || m_GameState == GameState.Lost || m_GameState == GameState.Won || m_GameState == GameState.Menu;  } }
+    public bool IsGameStopped {  get { Debug.Log("STATE OF THE GAME " + m_GameState);return m_GameState == GameState.Paused || m_GameState == GameState.Lost || m_GameState == GameState.Won || m_GameState == GameState.Menu;  } }
 
     public bool IsGamePaused { get { return m_GameState == GameState.Paused; } }
 

@@ -72,8 +72,15 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-        if (GM.IsGameStopped) return;
-        if (!isTumbling && !isRotating && !isFalling && !isWaiting) doAction();
+        if (GM.IsGameStopped) {
+            Debug.Log("oui");
+            return;
+        }
+        if (!isTumbling && !isRotating && !isFalling && !isWaiting)
+        {
+            Debug.Log("DO ACTION");
+            doAction();
+        }
         //CheckCollision();
     }
 
@@ -117,7 +124,7 @@ public class Cube : MonoBehaviour
     IEnumerator Fall()
     {
         isFalling = true;
-        transform.Translate(Vector3.down * fallSpeed * Time.deltaTime, Space.World);
+        transform.Translate(Vector3.down * fallSpeed*3 * Time.deltaTime, Space.World);
         yield return null;
         isFalling = false;
     }
@@ -150,7 +157,7 @@ public class Cube : MonoBehaviour
         //check ground
         //Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
         raycastDistance = GetComponent<Collider>().bounds.size.x * 2;
-        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance)){
+        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance/4 +0.1f)){
             initFall();
             if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance*100f))
             {

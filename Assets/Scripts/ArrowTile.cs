@@ -6,6 +6,8 @@ public class ArrowTile : MonoBehaviour
 {
     private RaycastHit hit;
 
+    [SerializeField] string name;
+    public string Name { get { return name; } set { } }
     [SerializeField] Vector3 arrowDirection;
     public Vector3 ArrowDirection { get { return arrowDirection; } set { } }
 
@@ -20,6 +22,9 @@ public class ArrowTile : MonoBehaviour
     {
 
     }
+
+
+
 
     //IEnumerator TriggerCooldown()
     //{

@@ -10,16 +10,11 @@ public class MenuManager : MonoBehaviour
     [Header("Panels")]
     [SerializeField] GameObject m_PanelMainMenu;
     [SerializeField] GameObject m_PanelInGameMenu;
-    [SerializeField] GameObject m_PreInGameMenu;
     [SerializeField] GameObject m_PanelVictory;
     [SerializeField] GameObject m_PanelGameOver;
     [SerializeField] GameObject m_PanelGamePaused;
 
-
     List<GameObject> m_AllPanels;
-
-    
-
 
     void Awake()
     {
