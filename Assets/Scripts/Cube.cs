@@ -10,10 +10,9 @@ public class Cube : MonoBehaviour
 
     static public List<Cube> list { get; private set; } = new List<Cube>(); 
 
-    [SerializeField]public float tumblingDuration = 0.3f;
-    [SerializeField] public float fallSpeed = 3f;
-    [SerializeField] public float waitingDuration = 3f;
-    [SerializeField] public float rotateDuration = 1f;
+    [SerializeField] public float tumblingDuration = 0.3f;
+    [SerializeField] public float waitingDuration = 1f;
+
 
     //Variable Animation
     bool isWaiting = false;

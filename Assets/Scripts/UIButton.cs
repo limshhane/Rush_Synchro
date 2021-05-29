@@ -16,7 +16,7 @@ public class UIButton : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Quaternion p = new Quaternion(0, 0, player.transform.rotation.z, -player.transform.rotation.w);
+        Quaternion p = new Quaternion(0, 0, player.transform.rotation.z, player.transform.rotation.w);
         transform.rotation = p;
     }
 

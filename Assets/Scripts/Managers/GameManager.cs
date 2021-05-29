@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(m_GameState);
+        //Debug.Log(m_GameState);
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (m_GameState == GameState.Game)
