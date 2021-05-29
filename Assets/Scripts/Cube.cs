@@ -57,11 +57,15 @@ public class Cube : MonoBehaviour
             return;
         }
     }
-
-    // Start is called before the first frame update
-    void Start()
+    private void Tick()
     {
 
+    }
+
+        // Start is called before the first frame update
+        void Start()
+    {
+        TimeManager.Instance.OnTick += Tick;
         list.Add(this);
         initWait();
         cubeDirection = Vector3.forward;

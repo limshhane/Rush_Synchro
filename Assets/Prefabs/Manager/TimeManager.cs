@@ -15,6 +15,7 @@ public class TimeManager : MonoBehaviour
     public float Ratio { get => _ratio; }
 
     public event Action OnTick;
+    public static TimeManager Instance { get { return instance; } }
 
     private void Awake()
     {
