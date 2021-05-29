@@ -109,7 +109,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 0.75, y: 0.75, z: 0.75}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7662858954850028529
 MonoBehaviour:
@@ -123,8 +123,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b2608b375e1ddb41ae7b2652249ec4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tumblingDuration: 0.3
+  tumblingDuration: 1
   fallSpeed: 10
-  waitingDuration: 0.1
+  waitingDuration: 1
   rotateDuration: 0.5
   isTumbling: 0

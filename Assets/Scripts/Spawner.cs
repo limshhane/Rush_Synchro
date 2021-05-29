@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    [SerializeField] GameManager GM;
+    GameManager GM;
 
     private int counter = 0;
     private bool isOn = true;
-    [SerializeField] private float spawnInterval = 1f;
+    [SerializeField] private float spawnInterval = 5f;
     [SerializeField] private GameObject cubePrefab;
-    [SerializeField] private float cubeSideLength = 1f;
     [SerializeField] private float numberOfCubesToSpawn = 3;
 
     public enum spawnDirectionEnum
@@ -22,16 +21,24 @@ public class Spawner : MonoBehaviour
     }
 
     [SerializeField] private spawnDirectionEnum spawnDirection = spawnDirectionEnum.Forward;
-    private Quaternion direction = Quaternion.identity;
+    private Vector3 direction = Vector3.forward;
 
     void Awake()
     {
-        // GM = GameManager.Instance;
+        GM = GameManager.Instance;
         GM.OnStateChange += HandleOnStateChange;
     }
 
     public void HandleOnStateChange()
     {
+        if(GM.IsPreGame)
+        {
+            counter = 0;
+            if(!IsInvoking("Spawn"))
+            {
+                InvokeRepeating("Spawn", 0f, spawnInterval);
+            }
+        }
     }
 
         // Start is called before the first frame update
@@ -53,7 +60,8 @@ public class Spawner : MonoBehaviour
         if (!GM.IsGameStopped && isOn && counter < numberOfCubesToSpawn)
         {
             // Debug.Log("Spawning cube");
-            Cube c = Instantiate(cubePrefab, new Vector3(transform.position.x, cubeSideLength / 2, transform.position.z), direction).GetComponent<Cube>();
+            Cube c = Instantiate(cubePrefab, new Vector3(transform.position.x, transform.position.y + cubePrefab.transform.localScale.x, transform.position.z), Quaternion.identity).GetComponent<Cube>();
+            c.SetDirection(direction);
             counter++;
         } else if(counter >= numberOfCubesToSpawn)
         {
@@ -66,16 +74,16 @@ public class Spawner : MonoBehaviour
         switch(spawnDirection)
         {
             case spawnDirectionEnum.Backward:
-                direction = Quaternion.Euler(0, 180, 0);
+                direction = new Vector3(0, 0, -1);
                 break;
             case spawnDirectionEnum.Forward:
-                direction = Quaternion.identity;
+                direction = new Vector3(0, 0, 1);
                 break;
             case spawnDirectionEnum.Right:
-                direction = Quaternion.Euler(0, 90, 0);
+                direction = new Vector3(-1, 0, 0);
                 break;
             case spawnDirectionEnum.Left:
-                direction = Quaternion.Euler(0, 270, 0);
+                direction = new Vector3(1, 0, 0);
                 break;
             default:
                 break;

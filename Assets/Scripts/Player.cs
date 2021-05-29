@@ -21,7 +21,7 @@ public class Player : MonoBehaviour
 
     // Update is called once per frame
     Ray ray;
-    RaycastHit hit;
+    RaycastHit hit, hit2;
     private Color startcolor;
 
     void Update()
@@ -32,6 +32,10 @@ public class Player : MonoBehaviour
         {
             if (hit.collider.CompareTag("Ground") && ArrowInHand != null && Input.GetMouseButtonDown(0))
             {
+                if (Physics.Raycast(hit.collider.transform.position, Vector3.up, out hit2, hit.collider.GetComponent<Renderer>().bounds.size.y))
+                {
+                    return;
+                }
                 float xTile = hit.transform.position.x;
                 float yTile = hit.transform.position.y+hit.transform.GetComponent<Renderer>().bounds.size.y/2 + 0.1f;
                 float zTile = hit.transform.position.z;

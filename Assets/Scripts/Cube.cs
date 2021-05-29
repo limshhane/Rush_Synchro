@@ -6,7 +6,7 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
 
-    [SerializeField] GameManager GM;
+    GameManager GM;
 
     static public List<Cube> list { get; private set; } = new List<Cube>(); 
 
@@ -40,7 +40,7 @@ public class Cube : MonoBehaviour
 
     void Awake()
     {
-        // GM = GameManager.Instance;
+        GM = GameManager.Instance;
         GM.OnStateChange += HandleOnStateChange;
     }
 
@@ -54,6 +54,7 @@ public class Cube : MonoBehaviour
                 Destroy(c.gameObject);
             }
             Destroy(this.gameObject);
+            list.Clear();
             return;
         }
     }
@@ -80,12 +81,12 @@ public class Cube : MonoBehaviour
     private void Update()
     {
         if (GM.IsGameStopped) {
-            Debug.Log("oui");
+            // Debug.Log("oui");
             return;
         }
         if (!isTumbling && !isRotating && !isFalling && !isWaiting)
         {
-            Debug.Log("DO ACTION");
+            // Debug.Log("DO ACTION");
             doAction();
         }
         //CheckCollision();
@@ -163,12 +164,13 @@ public class Cube : MonoBehaviour
         //Debug.Log("Check Collision");
         //check ground
         //Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
-        raycastDistance = GetComponent<Collider>().bounds.size.x * 2;
+        raycastDistance = GetComponent<Renderer>().bounds.size.x / 2 + 0.1f;
         if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance/4 +0.1f)){
             initFall();
             if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance*100f))
             {
-                Debug.Log("lose");
+                Debug.Log("Fall");
+                GM.SetGameState(GameState.Lost);
             }
             return;
         }
@@ -196,7 +198,8 @@ public class Cube : MonoBehaviour
             GameObject hitObjectInFront = hit.collider.gameObject;
             if (hitObjectInFront.CompareTag("Wall"))
             {
-                Debug.Log("Wall founded");
+                Debug.Log("Collision wall");
+                // GM.SetGameState(GameState.Lost);
                 SetDirection();
                 return;
 
@@ -247,6 +250,7 @@ public class Cube : MonoBehaviour
         {
             cubeDirectionX = 1;
             cubeDirectionZ = 0;
+            Debug.Log("OKDEAE");
         }
         
     }

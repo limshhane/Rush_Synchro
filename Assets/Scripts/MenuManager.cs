@@ -29,6 +29,8 @@ public class MenuManager : MonoBehaviour
         Debug.Log("OK");
         if(GM.IsGamePaused) OpenPanel(m_PanelGamePaused);
         if (GM.IsGameOn) OpenPanel(m_PanelInGameMenu);
+        if (GM.IsGameWon) OpenPanel(m_PanelVictory);
+        if (GM.IsGameOver) OpenPanel(m_PanelGameOver);
     }
 
     // Update is called once per frame
@@ -44,8 +46,8 @@ public class MenuManager : MonoBehaviour
         m_AllPanels.Add(m_PanelMainMenu);
         m_AllPanels.Add(m_PanelInGameMenu);
         m_AllPanels.Add(m_PanelGamePaused);
-        //m_AllPanels.Add(m_PanelGameOver);
-        //m_AllPanels.Add(m_PanelVictory);
+        m_AllPanels.Add(m_PanelGameOver);
+        m_AllPanels.Add(m_PanelVictory);
     }
 
     void OpenPanel(GameObject panel)
@@ -69,7 +71,7 @@ public class MenuManager : MonoBehaviour
     {
         
         OpenPanel(m_PanelInGameMenu);
-        GM.SetGameState(GameState.Game);
+        GM.SetGameState(GameState.PreGame);
  
     }
 

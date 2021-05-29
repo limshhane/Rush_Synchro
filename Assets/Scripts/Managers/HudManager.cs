@@ -16,14 +16,13 @@ public class HudManager : MonoBehaviour
     [SerializeField] List<Text> inventoryName;
     [SerializeField] List<Text> inventoryQuantity;
     
-    private bool inPreGame = false;
     GameManager GM;
 
 
     void Awake()
     {
-        //GM = GameManager.Instance;
-        //GM.OnStateChange += HandleOnStateChange;
+        GM = GameManager.Instance;
+        GM.OnStateChange += HandleOnStateChange;
         UpdateHUD();
         resetButton.SetActive(false);
     }
@@ -41,18 +40,17 @@ public class HudManager : MonoBehaviour
 
     public void StartButtonHasBeenClick()
     {
-        inPreGame = false;
-        
         resetButton.SetActive(true);
         startButton.SetActive(false);
         itemContainers.SetActive(false);
+        GM.SetGameState(GameState.Game);
     }
     public void ResetButtonHasBeenClick()
     {
-        inPreGame = true;
         resetButton.SetActive(false);
         startButton.SetActive(true);
         itemContainers.SetActive(true);
+        GM.SetGameState(GameState.PreGame);
     }
 
     public void HUDSelectArrowButton(Button b)
