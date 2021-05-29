@@ -6,7 +6,7 @@ using UnityEngine;
 public class Cube : MonoBehaviour
 {
 
-    GameManager GM;
+    [SerializeField] GameManager GM;
 
     static public List<Cube> list { get; private set; } = new List<Cube>(); 
 
@@ -40,7 +40,7 @@ public class Cube : MonoBehaviour
 
     void Awake()
     {
-        GM = GameManager.Instance;
+        // GM = GameManager.Instance;
         GM.OnStateChange += HandleOnStateChange;
     }
 
@@ -51,9 +51,10 @@ public class Cube : MonoBehaviour
         {
             foreach(Cube c in list)
             {
-                Destroy(c);
+                Destroy(c.gameObject);
             }
-            Destroy(this);
+            Destroy(this.gameObject);
+            return;
         }
     }
 
@@ -64,10 +65,16 @@ public class Cube : MonoBehaviour
         list.Add(this);
         initWait();
         cubeDirection = Vector3.forward;
-        cubeDirectionX = 0;
-        cubeDirectionZ = 1;
+        setDirectionUsingLocalRotation();
         radius = Mathf.Sqrt(2f) / (2f / transform.localScale.x);
 
+    }
+
+    private void setDirectionUsingLocalRotation()
+    {
+        float rotationY = transform.localRotation.eulerAngles.y;
+        cubeDirectionX = (rotationY == 90f) ? -1 : (rotationY == 270f) ? 1 : 0;
+        cubeDirectionZ = (rotationY == 0f) ? 1 : (rotationY == 180f) ? -1 : 0;
     }
 
     private void Update()
@@ -131,7 +138,7 @@ public class Cube : MonoBehaviour
 
     IEnumerator Rotate(Vector3 angles, float duration)
     {
-        Debug.Log("ROTATATATATA3");
+        //Debug.Log("ROTATATATATA3");
         isRotating = true;
         Quaternion startRotation = transform.rotation;
         Quaternion endRotation = Quaternion.Euler(angles) * startRotation;
@@ -153,7 +160,7 @@ public class Cube : MonoBehaviour
 
     private void CheckCollision()
     {
-        Debug.Log("Check Collision");
+        //Debug.Log("Check Collision");
         //check ground
         //Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
         raycastDistance = GetComponent<Collider>().bounds.size.x * 2;
@@ -172,6 +179,12 @@ public class Cube : MonoBehaviour
             {
                 ArrowTile arrTile = hitObjectInFront.GetComponent<ArrowTile>();
                 SetDirection(arrTile.ArrowDirection);
+                return;
+            } else if(hitObjectInFront.CompareTag("Arrival"))
+            {
+                GM.incNumberOfCubesPutIn();
+                list.Remove(this);
+                Destroy(this.gameObject);
                 return;
             }
         }
@@ -214,7 +227,7 @@ public class Cube : MonoBehaviour
     {
         initRotate();
         cubeDirection = d;
-        Debug.Log(d.x +d.y + d.z);
+        //Debug.Log(d.x +d.y + d.z);
         if (d.Equals(Vector3.forward))
         {
             cubeDirectionX = 0;
@@ -288,7 +301,7 @@ public class Cube : MonoBehaviour
 
     private void doActionWait()
     {
-        Debug.Log("Do Action Wait");
+        //Debug.Log("Do Action Wait");
         //cubeDirectionX = 0;
         //cubeDirectionZ = 0;
         StartCoroutine(Wait());
@@ -323,7 +336,7 @@ public class Cube : MonoBehaviour
     private void doActionRotate()
     {
         if (isTumbling) return;
-        Debug.Log("oui");
+        //Debug.Log("oui");
         initMove();
         StartCoroutine(Rotate( (Vector3.up * 90), rotateDuration));
         

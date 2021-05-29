@@ -28,6 +28,9 @@ public class GameManager : MonoBehaviour
 
     public bool IsGameOn { get { return m_GameState == GameState.Game; } }
 
+    private int numberOfCubesPutIn = 0;
+    private int numberOfCubesToPutIn = 5;
+
     private void Awake()
     {
         if (instance)
@@ -87,5 +90,14 @@ public class GameManager : MonoBehaviour
     public void OnApplicationQuit()
     {
         GameManager.instance = null;
+    }
+
+    public void incNumberOfCubesPutIn()
+    {
+        numberOfCubesPutIn++;
+        if(numberOfCubesPutIn >= numberOfCubesToPutIn)
+        {
+            SetGameState(GameState.Won);
+        }
     }
 }
