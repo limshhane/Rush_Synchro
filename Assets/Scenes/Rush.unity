@@ -139,41 +139,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e264f3957a36d845af92825132548f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 4
   cubePrefab: {fileID: 5831078177041585375, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
     type: 3}
   numberOfCubesToSpawn: 3
+  tickBetweenSpawn: 10
+  tickBeforeFirstSpawn: 0
   spawnDirection: 3
---- !u!1 &50563444
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 50563445}
-  m_Layer: 0
-  m_Name: TimeManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &50563445
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 50563444}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.290676, y: 18.116066, z: -104.31611}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &92244668 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8353668467907649946, guid: 86c04e4d9bb8e0e4fa3968cf1991772a,
@@ -276,6 +247,7 @@ MonoBehaviour:
   itemContainers: {fileID: 92244668}
   startButton: {fileID: 1425863411}
   resetButton: {fileID: 306597081}
+  timeSpeed: {fileID: 887713258}
   slider: {fileID: 1851082217}
   inventoryName:
   - {fileID: 842052214}
@@ -570,6 +542,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8353668467965815590}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &887713258 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1475454838139048503, guid: 86c04e4d9bb8e0e4fa3968cf1991772a,
+    type: 3}
+  m_PrefabInstance: {fileID: 8353668467965815590}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1158444582 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8353668466841459968, guid: 86c04e4d9bb8e0e4fa3968cf1991772a,
@@ -630,10 +614,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e264f3957a36d845af92825132548f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 4
   cubePrefab: {fileID: 5831078177041585375, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
     type: 3}
   numberOfCubesToSpawn: 3
+  tickBetweenSpawn: 10
+  tickBeforeFirstSpawn: 0
   spawnDirection: 2
 --- !u!1 &1622142325 stripped
 GameObject:
@@ -653,10 +638,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e264f3957a36d845af92825132548f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 4
   cubePrefab: {fileID: 5831078177041585375, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
     type: 3}
   numberOfCubesToSpawn: 3
+  tickBetweenSpawn: 10
+  tickBeforeFirstSpawn: 0
   spawnDirection: 0
 --- !u!1 &1689312313
 GameObject:
@@ -766,10 +752,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e264f3957a36d845af92825132548f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 4
   cubePrefab: {fileID: 5831078177041585375, guid: 7e3e60de285e89d47b6a78fd37ada9a8,
     type: 3}
   numberOfCubesToSpawn: 3
+  tickBetweenSpawn: 10
+  tickBeforeFirstSpawn: 0
   spawnDirection: 1
 --- !u!1 &2034372038 stripped
 GameObject:

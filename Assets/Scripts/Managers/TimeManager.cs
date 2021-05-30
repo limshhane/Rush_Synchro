@@ -7,15 +7,13 @@ public class TimeManager : MonoBehaviour
 {
     private static TimeManager instance;
 
-    public float tickRate;
-    private bool isTicking = false;
+    public float tickRate = 1f;
     private float elapsedTime = 0;
-    private float durationBetweenTicks = 1;
-    private float _ratio;
-    public float Ratio { get => _ratio; }
+    private float durationBetweenTicks = 1f;
+    private float ratio;
+    public float Ratio { get => ratio; }
 
     public event Action OnTick;
-    public static TimeManager Instance { get { return instance; } }
 
     private void Awake()
     {
@@ -28,10 +26,24 @@ public class TimeManager : MonoBehaviour
         instance = this;
     }
 
+    public static TimeManager Instance
+    {
+        get
+        {
+            if (TimeManager.instance == null)
+            {
+                //DontDestroyOnLoad(TimeManager.instance);
+                TimeManager.instance = new TimeManager();
+            }
+            return TimeManager.instance;
+        }
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
 
@@ -44,15 +56,13 @@ public class TimeManager : MonoBehaviour
     {
         if (elapsedTime >= durationBetweenTicks)
         {
-            Debug.Log("<color=green><size=21>Tick</size></color>");
-
+            OnTick?.Invoke();
             elapsedTime = 0;
-
         }
 
         elapsedTime += Time.deltaTime * tickRate;
 
-        _ratio = Mathf.Clamp01(elapsedTime / durationBetweenTicks);
+        ratio = Mathf.Clamp01(elapsedTime / durationBetweenTicks);
 
     }
     private void OnDestroy()

@@ -8,20 +8,18 @@ public class Cube : MonoBehaviour
 
     GameManager GM;
 
-    static public List<Cube> list { get; private set; } = new List<Cube>(); 
+    static public List<Cube> list { get; private set; } = new List<Cube>();
 
-    [SerializeField] public float tumblingDuration = 0.3f;
-    [SerializeField] public float waitingDuration = 1f;
-
+    public int nTickToWait { get; set; }
+    private int tickCounter=0;
 
     //Variable Animation
-    bool isWaiting = false;
-    public bool isTumbling = false;
-    bool isFalling = false;
-    bool isRotating = false;
+    [SerializeField] private AnimationCurve moveCurve;
+
+    public bool isWaiting { get; private set; }
+
 
     //Position variables
-    Vector3 cubeDirection;
 
     private float cubeDirectionX = 0;
     private float cubeDirectionZ = 0;
@@ -29,8 +27,13 @@ public class Cube : MonoBehaviour
     private Vector3 currPos;
     private float rotationTime = 0;
     private float radius;
+
+    private Vector3 fromPosition;
+    private Vector3 toPosition;
     private Quaternion fromRotation;
     private Quaternion toRotation;
+    public Vector3 cubeDirection { get; private set; }
+    private Quaternion cubeRotation;
 
     private RaycastHit hit;
     private float raycastDistance;
@@ -39,16 +42,30 @@ public class Cube : MonoBehaviour
 
     void Awake()
     {
+        TimeManager.Instance.OnTick += Tick;
         GM = GameManager.Instance;
         GM.OnStateChange += HandleOnStateChange;
+    }
+
+    private void Tick()
+    {
+
+        if (isWaiting)
+        {
+
+            tickCounter++;
+            return;
+        }
+
+        CheckCollision();
     }
 
     public void HandleOnStateChange()
     {
         // TODO
-        if(!GM.IsGameOn && !GM.IsGamePaused && !GM.IsGameOver)
+        if (!GM.IsGameOn && !GM.IsGamePaused && !GM.IsGameOver)
         {
-            foreach(Cube c in list)
+            foreach (Cube c in list)
             {
                 Destroy(c.gameObject);
             }
@@ -57,20 +74,21 @@ public class Cube : MonoBehaviour
             return;
         }
     }
-    private void Tick()
+
+
+    // Start is called before the first frame update
+    void Start()
     {
 
-    }
-
-        // Start is called before the first frame update
-        void Start()
-    {
-        TimeManager.Instance.OnTick += Tick;
         list.Add(this);
-        initWait();
-        cubeDirection = Vector3.forward;
+
         setDirectionUsingLocalRotation();
         radius = Mathf.Sqrt(2f) / (2f / transform.localScale.x);
+        cubeDirection = transform.forward*3;
+        cubeRotation = Quaternion.AngleAxis(90f, Vector3.Cross(Vector3.up,cubeDirection));
+        toPosition = transform.position;
+        toRotation = transform.rotation;
+        initWait(0);
 
     }
 
@@ -84,17 +102,14 @@ public class Cube : MonoBehaviour
 
     private void Update()
     {
-        if (GM.IsGameStopped) {
-            // Debug.Log("oui");
+        if (GM.IsGameStopped)
+        {
             return;
         }
-        if (!isTumbling && !isRotating && !isFalling && !isWaiting)
-        {
-            // Debug.Log("DO ACTION");
-            doAction();
-        }
-        //CheckCollision();
+        doAction();
     }
+
+
 
     // Update is called once per frame
     void FixedUpdate()
@@ -107,53 +122,6 @@ public class Cube : MonoBehaviour
 
     }
 
-    IEnumerator Tumble()
-    {
-        isTumbling = true;
-        float ratio = Mathf.Lerp(0, 1, rotationTime / tumblingDuration);
-        while (ratio != 1)
-        {
-
-            rotationTime += Time.deltaTime;
-            ratio = Mathf.Lerp(0, 1, rotationTime / tumblingDuration);
-
-
-            float thetaRad = Mathf.Lerp(0, Mathf.PI / 2f, ratio);
-            float distanceX = -cubeDirectionX * radius * (Mathf.Cos(45f * Mathf.Deg2Rad) - Mathf.Cos(45f * Mathf.Deg2Rad + thetaRad));
-            float distanceY = radius * (Mathf.Sin(45f * Mathf.Deg2Rad + thetaRad) - Mathf.Sin(45f * Mathf.Deg2Rad));
-            float distanceZ = cubeDirectionZ * radius * (Mathf.Cos(45f * Mathf.Deg2Rad) - Mathf.Cos(45f * Mathf.Deg2Rad + thetaRad));
-            transform.position = new Vector3(currPos.x + distanceX, currPos.y + distanceY, currPos.z + distanceZ);
-
-
-            transform.rotation = Quaternion.Lerp(fromRotation, toRotation, ratio);
-            yield return null;
-        }
-        isTumbling = false;
-        rotationTime = 0;
-        
-    }
-
-    /* IEnumerator Rotate(Vector3 angles, float duration)
-    {
-        //Debug.Log("ROTATATATATA3");
-        isRotating = true;
-        Quaternion startRotation = transform.rotation;
-        Quaternion endRotation = Quaternion.Euler(angles) * startRotation;
-        for (float t = 0; t < duration; t += Time.deltaTime)
-        {
-            transform.rotation = Quaternion.Lerp(startRotation, endRotation, t / duration);
-            yield return null;
-        }
-        transform.rotation = endRotation;
-        isRotating = false;
-    } */
-
-    IEnumerator Wait()
-    {
-        isWaiting = true;
-        yield return new WaitForSeconds(waitingDuration);
-        isWaiting = false;
-    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -170,9 +138,11 @@ public class Cube : MonoBehaviour
         //check ground
         //Debug.Log("Fall test " + !Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance));
         raycastDistance = GetComponent<Renderer>().bounds.size.x / 2 + 0.1f;
-        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance +0.1f)){
-            initFall();
-            if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance*100f))
+        if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance + 0.1f))
+        {
+
+            SetModeFall();
+            if (!Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance * 100f))
             {
                 CheckLose();
                 GM.SetGameState(GameState.Lost);
@@ -181,13 +151,17 @@ public class Cube : MonoBehaviour
         }
         else
         {
+
             GameObject hitObjectInFront = hit.collider.gameObject;
             if (hitObjectInFront.CompareTag("ArrowTile"))
             {
+
                 ArrowTile arrTile = hitObjectInFront.GetComponent<ArrowTile>();
                 SetDirection(arrTile.ArrowDirection);
+                SetModeMove();
                 return;
-            } else if(hitObjectInFront.CompareTag("Arrival"))
+            }
+            else if (hitObjectInFront.CompareTag("Arrival"))
             {
                 GM.incNumberOfCubesPutIn();
                 list.Remove(this);
@@ -203,37 +177,18 @@ public class Cube : MonoBehaviour
             GameObject hitObjectInFront = hit.collider.gameObject;
             if (hitObjectInFront.CompareTag("Wall"))
             {
-                //Debug.Log("Collision wall");
-                // GM.SetGameState(GameState.Lost);
                 SetDirection();
+                SetModeMove();
                 return;
 
             }
         }
 
-        initMove();
+        SetModeMove();
     }
-
-    //private void OnTriggerStay(Collider other)
-    //{
-    //    Debug.Log("onTrigger");
-    //    if (other.gameObject.CompareTag("ArrowTile"))
-    //    {
-    //        ArrowTile arrTile = other.gameObject.GetComponent<ArrowTile>();
-    //        if (!isTumbling && isWaiting)
-    //        {
-    //            Debug.Log("COLLISION TILE");
-    //            SetDirection(Vector3.right);
-    //            arrTile.GetComponent<Collider>().isTrigger = false;
-    //            //arrTile.StartCooldown();
-    //        }
-    //    }
-    //}
-
 
     public void SetDirection(Vector3 d)
     {
-        initRotate();
         cubeDirection = d;
         //Debug.Log(d.x +d.y + d.z);
         if (d.Equals(Vector3.forward))
@@ -256,13 +211,15 @@ public class Cube : MonoBehaviour
             cubeDirectionX = 1;
             cubeDirectionZ = 0;
         }
-        
+
+
+        cubeDirection *= 3;
+
     }
 
     public void SetDirection()
     {
-        initRotate();
-        if (cubeDirectionX ==0 && cubeDirectionZ == 1)
+        if (cubeDirectionX == 0 && cubeDirectionZ == 1)
         {
             cubeDirectionX = -1;
             cubeDirectionZ = 0;
@@ -287,73 +244,86 @@ public class Cube : MonoBehaviour
             cubeDirection = Vector3.forward;
         }
 
-        
+        cubeDirection *= 3;
+
+
     }
 
-    public void initFall()
+    private void SetModeFall()
     {
-        doAction = doActionFall;
+        InitFall();
+        doAction = DoActionFall;
     }
 
-    private void doActionFall()
+    public void InitFall()
     {
-        // StartCoroutine(Fall());
-        transform.Translate(Vector3.down * transform.GetComponent<Renderer>().bounds.size.y, Space.World);
-        initWait();
+        fromPosition = transform.position;
+
+        toPosition = fromPosition + Vector3.down;
     }
 
-    private void initWait()
+    private void DoActionFall()
     {
-        doAction = doActionWait;
+        transform.position = Vector3.Lerp(fromPosition, toPosition, TimeManager.Instance.Ratio);
     }
 
-    private void doActionWait()
+    public void initWait(int nTickToWait)
     {
-        //Debug.Log("Do Action Wait");
-        //cubeDirectionX = 0;
-        //cubeDirectionZ = 0;
-        StartCoroutine(Wait());
-        CheckCollision();
+        if (isWaiting)
+        {
+            nTickToWait--;
+        }
+        isWaiting = true;
+
+        this.nTickToWait = nTickToWait;
+
+        doAction = DoActionWait;
     }
 
-    private void initMove()
+
+    private void DoActionWait()
     {
-        doAction = doActionMove;
+
+        if (tickCounter > nTickToWait)
+        {
+
+            CheckCollision();
+            tickCounter = 0;
+            isWaiting = false;
+        }
     }
 
-    private void doActionMove()
+    private void InitMove()
     {
-        if (isTumbling) return;
-        currPos = transform.position;
-        fromRotation = transform.rotation;
-        transform.Rotate(cubeDirectionZ * 90, 0, cubeDirectionX * 90, Space.World);
-        toRotation = transform.rotation;
-        transform.rotation = fromRotation;
-        rotationTime = 0;
-        StartCoroutine(Tumble());
-        initWait();
+        fromPosition = toPosition;
+        fromRotation = toRotation;
+
+        cubeRotation = Quaternion.AngleAxis(90f, Vector3.Cross(Vector3.up, cubeDirection));
+
+        toPosition = fromPosition + cubeDirection;
+        toRotation = cubeRotation * fromRotation;
     }
 
-
-
-    private void initRotate()
+    private void SetModeMove()
     {
-        doAction = doActionRotate;
+        InitMove();
+        doAction = DoActionMove;
     }
 
-    private void doActionRotate()
+    private void DoActionMove()
     {
-        if (isTumbling) return;
-        //Debug.Log("oui");
-        initMove();
-        // StartCoroutine(Rotate( (Vector3.up * 90), rotateDuration));
-        
+
+        transform.position = Vector3.Lerp(fromPosition, toPosition, moveCurve.Evaluate(TimeManager.Instance.Ratio))
+            + Vector3.up * Mathf.Sin(Mathf.PI * Mathf.Clamp01(moveCurve.Evaluate(TimeManager.Instance.Ratio)));
+        transform.rotation = Quaternion.Lerp(fromRotation, toRotation, moveCurve.Evaluate(TimeManager.Instance.Ratio));
     }
+
+
 
     private void CheckLose()
     {
         GetComponent<Renderer>().material.color = Color.black;
-        
+
     }
 
     private void CheckLose(Collider other)
@@ -362,4 +332,10 @@ public class Cube : MonoBehaviour
         other.GetComponent<Renderer>().material.color = Color.black;
     }
 
+    private void OnDestroy()
+    {
+        TimeManager.Instance.OnTick -= Tick;
+        list.Remove(this);
+
+    }
 }

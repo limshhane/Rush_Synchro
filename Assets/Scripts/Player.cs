@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
         {
             if (a.ArrowDirection == inventory[i].ArrowDirection)
             {
-                Debug.Log("MEME ARROW");
+
                 indexArrow = i;
                 break;
             }

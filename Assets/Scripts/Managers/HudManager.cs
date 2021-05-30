@@ -12,6 +12,7 @@ public class HudManager : MonoBehaviour
     [SerializeField] GameObject itemContainers;
     [SerializeField] GameObject startButton;
     [SerializeField] GameObject resetButton;
+    [SerializeField] Text timeSpeed;
 
     [SerializeField] Slider slider;
 
@@ -25,10 +26,10 @@ public class HudManager : MonoBehaviour
     {
         GM = GameManager.Instance;
         GM.OnStateChange += HandleOnStateChange;
-        slider.minValue = 10;
-        slider.maxValue = 100;
+        slider.minValue = 1;
+        slider.maxValue = 10;
         slider.wholeNumbers = true;
-        slider.value = 20;
+        slider.value = 2;
         UpdateHUD();
         resetButton.SetActive(false);
     }
@@ -45,7 +46,8 @@ public class HudManager : MonoBehaviour
         if (GM.IsGameOn)
         {
             slider.gameObject.SetActive(true);
-            slider.value = 20;
+            slider.value = 2;
+            timeSpeed.text = "2";
             
         }
     }
@@ -92,7 +94,8 @@ public class HudManager : MonoBehaviour
 
     public void onValueChange(float value)
     {
-        Time.timeScale = value/10;
+        TimeManager.Instance.tickRate = value;
+        timeSpeed.text = value + "";
     }
     
 }

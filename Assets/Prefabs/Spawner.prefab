@@ -107,7 +107,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e264f3957a36d845af92825132548f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInterval: 1
   cubePrefab: {fileID: 0}
-  cubeSideLength: 1
   numberOfCubesToSpawn: 3
+  tickBetweenSpawn: 0
+  tickBeforeFirstSpawn: 0
+  spawnDirection: 2
